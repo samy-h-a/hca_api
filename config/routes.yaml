@@ -1,0 +1,13 @@
+controllers:
+    resource:
+        path: ../src/Controllers/
+        namespace: App\Controllers
+    type: attribute
+
+api_login_check:
+    path: /api/login_check
+
+app_verify_email:
+    path: /verify-email/{token}
+    controller: App\Controllers\SecurityController::verifyEmail
+

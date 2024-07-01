@@ -1,0 +1,1 @@
+ssh -i "hca_key.pem" ubuntu@ec2-18-246-218-34.us-west-2.compute.amazonaws.com
