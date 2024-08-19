@@ -48,6 +48,9 @@ security:
         - { path: ^/api/article/getAllArticles, roles: PUBLIC_ACCESS }
         - { path: ^/api/uploads/videoCover, roles: PUBLIC_ACCESS }
         - { path: ^/api/uploads/pdf, roles: PUBLIC_ACCESS }
+        - { path: ^/api/uploads/applications/getAllApplications, roles: PUBLIC_ACCESS }
+        - { path: ^/api/uploads/applications/covers, roles: PUBLIC_ACCESS }
+        - { path: ^/api/uploads/applications/files, roles: PUBLIC_ACCESS }
         - { path: ^/api/, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
