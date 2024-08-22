@@ -45,9 +45,11 @@ security:
         - { path: ^/api/books/getAllFiles, roles: PUBLIC_ACCESS }
         - { path: ^/api/article/getAllArticles, roles: PUBLIC_ACCESS }
         - { path: ^/api/video/getAllVideos, roles: PUBLIC_ACCESS }
+        - { path: ^/api/album/getAllAlbums, roles: PUBLIC_ACCESS }
         - { path: ^/api/article/getAllArticles, roles: PUBLIC_ACCESS }
         - { path: ^/api/uploads/videoCover, roles: PUBLIC_ACCESS }
         - { path: ^/api/uploads/pdf, roles: PUBLIC_ACCESS }
+        - { path: ^/api/uploads/pictures, roles: PUBLIC_ACCESS }
         - { path: ^/api/uploads/applications/getAllApplications, roles: PUBLIC_ACCESS }
         - { path: ^/api/uploads/applications/covers, roles: PUBLIC_ACCESS }
         - { path: ^/api/uploads/applications/files, roles: PUBLIC_ACCESS }

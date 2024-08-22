@@ -17,13 +17,14 @@ class FileUploader
     private $targetDirectoryVideoCover;
     private $targetDirectoryApplicationCover;
     private $targetDirectoryApplicationFile;
+    private $targetDirectoryAlbumPicture;
 
 
     private $doctrine;
     private $tokenStorage;
     private $client;
 
-    public function __construct(string $targetDirectoryPdfFile, string $targetDirectoryApplicationCover,string $targetDirectoryApplicationFile, string $targetDirectoryVideoCover,  string $targetDirectoryArticleCover, string $targetDirectoryPdfCover, PersistenceManagerRegistry $doctrine, TokenStorageInterface $tokenStorage, HttpClientInterface $client)
+    public function __construct(string $targetDirectoryAlbumPicture, string $targetDirectoryPdfFile, string $targetDirectoryApplicationCover,string $targetDirectoryApplicationFile, string $targetDirectoryVideoCover,  string $targetDirectoryArticleCover, string $targetDirectoryPdfCover, PersistenceManagerRegistry $doctrine, TokenStorageInterface $tokenStorage, HttpClientInterface $client)
     {
         $this->targetDirectoryPdfFile = $targetDirectoryPdfFile;
         $this->doctrine = $doctrine;
@@ -34,6 +35,7 @@ class FileUploader
         $this->targetDirectoryVideoCover = $targetDirectoryVideoCover;
         $this->targetDirectoryApplicationCover = $targetDirectoryApplicationCover;
         $this->targetDirectoryApplicationFile = $targetDirectoryApplicationFile;
+        $this->targetDirectoryAlbumPicture = $targetDirectoryAlbumPicture;
     }
 
     public function saveFile(UploadedFile $file, string $fileType): string
@@ -59,6 +61,8 @@ class FileUploader
                 $file->move($this->getTargetDirectoryApplicationCover(), $fileName);
             } else if ($fileType === 'app_file') {
                 $file->move($this->getTargetDirectoryApplicationFile(), $fileName);
+            } else if ($fileType === 'album_picture') {
+                $file->move($this->getTargetDirectoryAlbumPicture(), $fileName);
             }
         } catch (FileException $e) {
             throw new \Exception($e->getMessage());
@@ -90,5 +94,9 @@ class FileUploader
     private function getTargetDirectoryApplicationFile():string 
     {
         return $this->targetDirectoryApplicationFile;
+    }
+    private function getTargetDirectoryAlbumPicture():string 
+    {
+        return $this->targetDirectoryAlbumPicture;
     }
 }

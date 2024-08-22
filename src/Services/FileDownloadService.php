@@ -26,11 +26,12 @@ class FileDownloadService
     private $targetDirectoryVideoCover;
     private $targetDirectoryApplicationCover;
     private $targetDirectoryApplicationFile;
+    private $targetDirectoryAlbumPicture;
 
     private $tokenStorage;
     public const MAX_DOWNLOADS = 3;
 
-    public function __construct(string $targetDirectoryVideoCover,string $targetDirectoryApplicationCover, string $targetDirectoryApplicationFile, string $targetDirectoryPdfFile, string $targetDirectoryArticleCover, string $targetDirectoryPdfCover, TokenStorageInterface $tokenStorage, ManagerRegistry $doctrine, BookRepository $bookRepository, ApplicationsRepository $applicationsRepository)
+    public function __construct(string $targetDirectoryAlbumPicture, string $targetDirectoryVideoCover,string $targetDirectoryApplicationCover, string $targetDirectoryApplicationFile, string $targetDirectoryPdfFile, string $targetDirectoryArticleCover, string $targetDirectoryPdfCover, TokenStorageInterface $tokenStorage, ManagerRegistry $doctrine, BookRepository $bookRepository, ApplicationsRepository $applicationsRepository)
     {
         $this->doctrine = $doctrine;
         $this->bookRepository = $bookRepository;
@@ -42,6 +43,7 @@ class FileDownloadService
         $this->targetDirectoryVideoCover = $targetDirectoryVideoCover;
         $this->targetDirectoryApplicationCover = $targetDirectoryApplicationCover;
         $this->targetDirectoryApplicationFile = $targetDirectoryApplicationFile;
+        $this->targetDirectoryAlbumPicture = $targetDirectoryAlbumPicture;
     }
 
     public function downloadBook(string $fileName, string $operation): BinaryFileResponse | JsonResponse
@@ -102,6 +104,7 @@ class FileDownloadService
 
         return $response;
     }
+
     
     public function downloadApplicationCover(string $coverName): BinaryFileResponse | JsonResponse
     {
@@ -279,6 +282,21 @@ class FileDownloadService
         $entityManager->flush();
     }
 
+    public function downloadPicture(string $fileName): BinaryFileResponse | JsonResponse
+    {
+        $filePath = $this->targetDirectoryAlbumPicture . $fileName;
+
+        if (!file_exists($filePath)) {
+            return new JsonResponse(['message' => 'File not found'], JsonResponse::HTTP_NOT_FOUND);
+        }
+
+        $file = new File($filePath);
+        $response = new BinaryFileResponse($file);
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $file->getFilename());
+
+        return $response;
+    }
+
     private function getTargetDirectoryPdfFile(): string
     {
         return $this->targetDirectoryPdfFile;
@@ -302,5 +320,9 @@ class FileDownloadService
     private function getTargetDirectoryApplicationFile(): string
     {
         return $this->targetDirectoryApplicationFile;
+    }
+    private function getTargetDirectoryAlbumPicture():string 
+    {
+        return $this->targetDirectoryAlbumPicture;
     }
 }

@@ -27,6 +27,7 @@ services:
             $targetDirectoryVideoCover: '%env(TARGET_DIRECTORY4)%'
             $targetDirectoryApplicationCover: '%env(TARGET_DIRECTORY6)%'
             $targetDirectoryApplicationFile: '%env(TARGET_DIRECTORY7)%'
+            $targetDirectoryAlbumPicture: '%env(TARGET_DIRECTORY5)%'
 
 
     App\Services\FileDownloadService:
@@ -37,6 +38,7 @@ services:
             $targetDirectoryVideoCover: '%env(TARGET_DIRECTORY4)%'
             $targetDirectoryApplicationCover: '%env(TARGET_DIRECTORY6)%'
             $targetDirectoryApplicationFile: '%env(TARGET_DIRECTORY7)%'
+            $targetDirectoryAlbumPicture: '%env(TARGET_DIRECTORY5)%'
 
     App\Services\ArticleService:
         arguments:
@@ -46,9 +48,10 @@ services:
         arguments:
             $targetDirectoryVideoCover: '%env(TARGET_DIRECTORY4)%'
 
-    # App\Services\AlbumService:
-    #     arguments:
-    #         $targetDirectoryAlbums: '%env(TARGET_DIRECTORY5)%'
+    App\Services\AlbumService:
+        arguments:
+            $targetDirectoryAlbumPicture: '%env(TARGET_DIRECTORY5)%'
+
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
