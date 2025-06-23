@@ -91,7 +91,7 @@ class RegistrationService
         $verificationUrl = $this->router->generate('app_verify_email', ['token' => $token], UrlGeneratorInterface::ABSOLUTE_URL);
 
         $email = (new Email())
-            ->from('noreply@minervadz.com')
+            ->from('ur-ttara-ara@hc-amazighite.dz')
             ->to($user->getEmail())
             ->subject('Email Verification')
             ->html(sprintf('Please verify your email by clicking <a href="%s">here</a>.', $verificationUrl));
@@ -104,7 +104,7 @@ class RegistrationService
         $user = $this->userRepository->findOneBy(['email' => $email]);
 
         if (!$user) {
-            return new JsonResponse(['message' => 'Utilisateur non trouvé'], JsonResponse::HTTP_NOT_FOUND);
+            return new JsonResponse(['message' => 'Utilisateur non trouvé'], JsonResponse::HTTP_BAD_REQUEST);
         }
 
         try {

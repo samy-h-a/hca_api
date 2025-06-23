@@ -54,23 +54,22 @@ class BookController extends AbstractController
     }
 
 
-    #[Route('api/uploads/pdf/{fileName}', name: 'app_book_download', methods: ['GET'])]
+    #[Route('/api/uploads/pdf/{fileName}', name: 'app_book_download', methods: ['GET'])]
     public function download(string $fileName, Request $request, FileDownloadService $fileDownloadService): BinaryFileResponse | JsonResponse
     {
         $data = json_decode($request->getContent(), true);
     
-        if (!isset($data['operation'])) {
-            return new JsonResponse(['message' => 'Operation is required'], JsonResponse::HTTP_BAD_REQUEST);
-        }
+        #if (!isset($data['operation'])) {
+        #   return new JsonResponse(['message' => 'Operation is required'], JsonResponse::HTTP_BAD_REQUEST);
+        #}
     
-        if ($data['operation'] === 'view' || $data['operation'] === 'download') {
-            return $fileDownloadService->downloadBook($fileName, $data['operation']);
-        }
+       	return $fileDownloadService->downloadBook($fileName, "download");
+        
     
-        return new JsonResponse(['message' => 'Operation is not valid'], JsonResponse::HTTP_BAD_REQUEST);
+        #return new JsonResponse(['message' => 'Operation is not valid'], JsonResponse::HTTP_BAD_REQUEST);
     }
 
-    #[Route('api/uploads/cover/{coverName}', name: 'app_book_cover_download', methods: ['GET'])]
+    #[Route('/api/uploads/cover/{coverName}', name: 'app_book_cover_download', methods: ['GET'])]
     public function downloadCover(string $coverName, FileDownloadService $fileDownloadService): BinaryFileResponse | JsonResponse
     {
         return $fileDownloadService->downloadBookCover($coverName);

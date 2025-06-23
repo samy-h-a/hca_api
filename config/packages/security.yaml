@@ -38,6 +38,7 @@ security:
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
+   
     access_control:
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/register, roles: PUBLIC_ACCESS }
@@ -45,10 +46,26 @@ security:
         - { path: ^/api/books/getAllFiles, roles: PUBLIC_ACCESS }
         - { path: ^/api/article/getAllArticles, roles: PUBLIC_ACCESS }
         - { path: ^/api/video/getAllVideos, roles: PUBLIC_ACCESS }
-        - { path: ^/api/article/getAllArticles, roles: PUBLIC_ACCESS }
         - { path: ^/api/uploads/videoCover, roles: PUBLIC_ACCESS }
+        - { path: ^/api/uploads/articleCover, roles: PUBLIC_ACCESS }
         - { path: ^/api/uploads/pdf, roles: PUBLIC_ACCESS }
+        - { path: ^/api/uploads/cover, roles: PUBLIC_ACCESS }
+        - { path: ^/api/uploads/applications/getAllApplications, roles: PUBLIC_ACCESS }
+        - { path: ^/api/uploads/applications/covers, roles: PUBLIC_ACCESS }
+        - { path: ^/api/uploads/applications/files, roles: PUBLIC_ACCESS }
         - { path: ^/api/, roles: IS_AUTHENTICATED_FULLY }
+    #access_control:
+        #- { path: ^/api/login, roles: PUBLIC_ACCESS }
+        #- { path: ^/api/register, roles: PUBLIC_ACCESS }
+        #- { path: ^/api/sendVerification, roles: PUBLIC_ACCESS }
+        #- { path: ^/api/books/getAllFiles, roles: PUBLIC_ACCESS }
+        #- { path: ^/api/article/getAllArticles, roles: PUBLIC_ACCESS }
+        #- { path: ^/api/video/getAllVideos, roles: PUBLIC_ACCESS }
+        #- { path: ^/api/article/getAllArticles, roles: PUBLIC_ACCESS }
+        #- { path: ^/api/uploads/videoCover, roles: PUBLIC_ACCESS }
+        #- { path: ^/api/uploads/articleCover, roles: PUBLIC_ACCESS }
+        #- { path: ^/api/uploads/pdf, roles: PUBLIC_ACCESS }
+        #- { path: ^/api/, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
     security:

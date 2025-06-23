@@ -98,7 +98,7 @@ class ArticleController extends AbstractController
         }
     }
 
-    #[Route('api/uploads/articleCover/{coverName}', name: 'app_article_cover_download', methods: ['GET'])]
+    #[Route('/api/uploads/articleCover/{coverName}', name: 'app_article_cover_download', methods: ['GET'])]
     public function downloadCover(string $coverName, FileDownloadService $fileDownloadService): BinaryFileResponse | JsonResponse
     {
         return $fileDownloadService->downloadArticleCover($coverName);

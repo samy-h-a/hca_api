@@ -15,14 +15,15 @@ class FileUploader
     private $targetDirectoryPdfCover;
     private $targetDirectoryArticleCover;
     private $targetDirectoryVideoCover;
-
+    private $targetDirectoryApplicationCover;
+    private $targetDirectoryApplicationFile;
 
 
     private $doctrine;
     private $tokenStorage;
     private $client;
 
-    public function __construct(string $targetDirectoryPdfFile, string $targetDirectoryVideoCover,  string $targetDirectoryArticleCover, string $targetDirectoryPdfCover, PersistenceManagerRegistry $doctrine, TokenStorageInterface $tokenStorage, HttpClientInterface $client)
+    public function __construct(string $targetDirectoryPdfFile, string $targetDirectoryApplicationCover,string $targetDirectoryApplicationFile, string $targetDirectoryVideoCover,  string $targetDirectoryArticleCover, string $targetDirectoryPdfCover, PersistenceManagerRegistry $doctrine, TokenStorageInterface $tokenStorage, HttpClientInterface $client)
     {
         $this->targetDirectoryPdfFile = $targetDirectoryPdfFile;
         $this->doctrine = $doctrine;
@@ -31,6 +32,8 @@ class FileUploader
         $this->targetDirectoryPdfCover = $targetDirectoryPdfCover;
         $this->targetDirectoryArticleCover = $targetDirectoryArticleCover;
         $this->targetDirectoryVideoCover = $targetDirectoryVideoCover;
+        $this->targetDirectoryApplicationCover = $targetDirectoryApplicationCover;
+        $this->targetDirectoryApplicationFile = $targetDirectoryApplicationFile;
     }
 
     public function saveFile(UploadedFile $file, string $fileType): string
@@ -52,6 +55,10 @@ class FileUploader
                 $file->move($this->getTargetDirectoryPdfFile(), $fileName);
             } else if ($fileType === 'video_cover') {
                 $file->move($this->getTargetDirectoryVideoCover(), $fileName);
+            } else if ($fileType === 'app_cover') {
+                $file->move($this->getTargetDirectoryApplicationCover(), $fileName);
+            } else if ($fileType === 'app_file') {
+                $file->move($this->getTargetDirectoryApplicationFile(), $fileName);
             }
         } catch (FileException $e) {
             throw new \Exception($e->getMessage());
@@ -75,5 +82,13 @@ class FileUploader
     private function getTargetDirectoryVideoCover(): string
     {
         return $this->targetDirectoryVideoCover;
+    }
+    private function getTargetDirectoryApplicationCover():string 
+    {
+        return $this->targetDirectoryApplicationCover;
+    }
+    private function getTargetDirectoryApplicationFile():string 
+    {
+        return $this->targetDirectoryApplicationFile;
     }
 }

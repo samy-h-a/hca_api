@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use App\Repository\BookRepository;
+use App\Repository\ApplicationsRepository;
 use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -18,23 +19,29 @@ class FileDownloadService
 {
     private $doctrine;
     private $bookRepository;
+    private $applicationsRepository;
     private $targetDirectoryPdfFile;
     private $targetDirectoryPdfCover;
     private $targetDirectoryArticleCover;
     private $targetDirectoryVideoCover;
+    private $targetDirectoryApplicationCover;
+    private $targetDirectoryApplicationFile;
 
     private $tokenStorage;
     public const MAX_DOWNLOADS = 3;
 
-    public function __construct(string $targetDirectoryVideoCover, string $targetDirectoryPdfFile, string $targetDirectoryArticleCover, string $targetDirectoryPdfCover, TokenStorageInterface $tokenStorage, ManagerRegistry $doctrine, BookRepository $bookRepository)
+    public function __construct(string $targetDirectoryVideoCover,string $targetDirectoryApplicationCover, string $targetDirectoryApplicationFile, string $targetDirectoryPdfFile, string $targetDirectoryArticleCover, string $targetDirectoryPdfCover, TokenStorageInterface $tokenStorage, ManagerRegistry $doctrine, BookRepository $bookRepository, ApplicationsRepository $applicationsRepository)
     {
         $this->doctrine = $doctrine;
         $this->bookRepository = $bookRepository;
+        $this->applicationsRepository = $applicationsRepository;
         $this->targetDirectoryPdfFile = $targetDirectoryPdfFile;
         $this->targetDirectoryPdfCover = $targetDirectoryPdfCover;
         $this->targetDirectoryArticleCover = $targetDirectoryArticleCover;
         $this->tokenStorage = $tokenStorage;
         $this->targetDirectoryVideoCover = $targetDirectoryVideoCover;
+        $this->targetDirectoryApplicationCover = $targetDirectoryApplicationCover;
+        $this->targetDirectoryApplicationFile = $targetDirectoryApplicationFile;
     }
 
     public function downloadBook(string $fileName, string $operation): BinaryFileResponse | JsonResponse
@@ -84,6 +91,35 @@ class FileDownloadService
     public function downloadVideoCover(string $coverName): BinaryFileResponse | JsonResponse
     {
         $filePath = $this->getTargetDirectoryVideoCover() . $coverName;
+
+        if (!file_exists($filePath)) {
+            return new JsonResponse(['message' => 'File not found'], JsonResponse::HTTP_NOT_FOUND);
+        }
+
+        $file = new File($filePath);
+        $response = new BinaryFileResponse($file);
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $file->getFilename());
+
+        return $response;
+    }
+    
+    public function downloadApplicationCover(string $coverName): BinaryFileResponse | JsonResponse
+    {
+        $filePath = $this->getTargetDirectoryApplicationCover() . $coverName;
+
+        if (!file_exists($filePath)) {
+            return new JsonResponse(['message' => 'File not found'], JsonResponse::HTTP_NOT_FOUND);
+        }
+        $file = new File($filePath);
+        $response = new BinaryFileResponse($file);
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $file->getFilename());
+        return $response;
+
+    }
+
+    public function downloadApplicationFile(string $fileName):  BinaryFileResponse | JsonResponse
+    {
+        $filePath = $this->getTargetDirectoryApplicationFile() . $fileName;
 
         if (!file_exists($filePath)) {
             return new JsonResponse(['message' => 'File not found'], JsonResponse::HTTP_NOT_FOUND);
@@ -153,6 +189,52 @@ class FileDownloadService
     }
 
 
+    public function deleteApplication(string $fileId)
+    {
+        $token = $this->tokenStorage->getToken();
+        $user = $token->getUser();
+        if ($user->getRoles()[0] !== 'ROLE_ADMIN') {
+            return new JsonResponse(['message' => 'You are not authorized to delete applications'], JsonResponse::HTTP_FORBIDDEN);
+        }
+        $application = $this->applicationsRepository->find($fileId);
+        if (!$application) { 
+            throw new NotFoundHttpException('Application not found');
+        }
+
+        $fileLink = $application->getLink();
+
+        $fileName = basename($fileLink);
+        $filePath = $this->targetDirectoryApplicationFile . '/' . $fileName;
+        if (file_exists($filePath)) {
+            unlink($filePath);
+            $coverName = basename($application->getCover());
+            $this->removeApplicationCover($coverName);
+        } else {
+            throw new NotFoundHttpException('File not found');
+        }
+
+        $this->removeApplicationFromDatabase($fileId);
+    }
+
+    private function removeApplicationCover(string $coverName): void
+    {
+        $coverPath = $this->targetDirectoryApplicationCover . '/' . $coverName;
+        if (file_exists($coverPath)) {
+            unlink($coverPath);
+        }
+    }
+
+    private function removeApplicationFromDatabase(string $fileId): void
+    {
+        $entityManager = $this->doctrine->getManager();
+        $application = $this->applicationsRepository->find($fileId);
+        if (!$application) {
+            throw new NotFoundHttpException('Application not found in database');
+        }
+
+        $entityManager->remove($application);
+        $entityManager->flush();
+    }
 
     public function deleteBook(string $fileId)
     {
@@ -212,5 +294,13 @@ class FileDownloadService
     private function getTargetDirectoryVideoCover(): string
     {
         return $this->targetDirectoryVideoCover;
+    }
+    private function getTargetDirectoryApplicationCover(): string
+    {
+        return $this->targetDirectoryApplicationCover;
+    }
+    private function getTargetDirectoryApplicationFile(): string
+    {
+        return $this->targetDirectoryApplicationFile;
     }
 }

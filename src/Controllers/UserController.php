@@ -14,13 +14,14 @@ use Symfony\Component\HttpFoundation\Request;
 class UserController extends AbstractController
 {
 
-    #[Route('/api/register', name: 'app_registration', methods: ['POST'])]
+    #[Route('api/register', name: 'app_registration', methods: ['POST'])]
     public function registration(Request $request, RegistrationService $registrationService): JsonResponse
     {
         $body = json_decode($request->getContent(), true);
         if (!isset($body['email']) || !isset($body['password'])) {
             return new JsonResponse(['message' => 'Tous les champs sont requis'], 400);
         }
+
         try {
             $isAdmin = isset($body['is_admin']) && $body['is_admin'] === 1;
             $result = $registrationService->registration($body, $isAdmin);
@@ -31,13 +32,13 @@ class UserController extends AbstractController
                 return new JsonResponse($result, 200);
             }
         } catch (\Exception $e) {
-            return new JsonResponse(['message' => 'Une erreur est survenue'], 500);
+            return new JsonResponse(['message' => $e], 500);
         }
     }
 
 
 
-    #[Route('/api/login', name: 'app_login', methods: ['POST'])]
+    #[Route('api/login', name: 'app_login', methods: ['POST'])]
     public function login(Request $request, AuthenticationService $authenticationService): JsonResponse
     {
         // Decode JSON body from the request
@@ -66,7 +67,7 @@ class UserController extends AbstractController
         }
     }
 
-    #[Route('/api/sendVerification', name: 'app_send_verification', methods: ['POST'])]
+    #[Route('api/sendVerification', name: 'app_send_verification', methods: ['POST'])]
     public function sendVerification(Request $request, RegistrationService $registrationService): JsonResponse
     {
         $body = json_decode($request->getContent(), true);
