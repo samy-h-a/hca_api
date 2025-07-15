@@ -35,8 +35,9 @@ class Book
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $edition = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $category = null;
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Category $category = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $cover = null;
@@ -139,15 +140,14 @@ class Book
         return $this;
     }
 
-    public function getCategory(): ?string
+    public function getCategory(): ?Category
     {
         return $this->category;
     }
 
-    public function setCategory(?string $category): static
+    public function setCategory(?Category $category): static
     {
         $this->category = $category;
-
         return $this;
     }
 

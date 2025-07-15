@@ -51,7 +51,7 @@ class RegistrationService
         $user->setPassword($hashedPassword);
 
         $user->setRoles($isAdmin ? ['ROLE_ADMIN'] : ['ROLE_USER']);
-        $user->setVerified(false);
+        $user->setVerified($isAdmin? true : false);
         $entityManager->persist($user);
         try {
             $entityManager->flush();

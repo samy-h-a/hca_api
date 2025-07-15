@@ -5,6 +5,7 @@ namespace App\Services;
 
 use App\Entity\Book;
 use App\Repository\BookRepository;
+use App\Repository\CategoryRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use DateTimeImmutable;
 
@@ -15,16 +16,24 @@ class BookService
 
     private $doctrine;
     private $bookRepository;
+    private $categoryRepository;
 
-    public function __construct(ManagerRegistry $doctrine, BookRepository $bookRepository)
+    public function __construct(ManagerRegistry $doctrine, BookRepository $bookRepository, CategoryRepository $categoryRepository)
     {
         $this->doctrine = $doctrine;
         $this->bookRepository = $bookRepository;
+        $this->categoryRepository = $categoryRepository;
     }
-
 
     public function addBook($data, $fileName, $coverFileName)
     {
+        $categoryId = $data['category_id'];
+        $category = $this->categoryRepository->find($categoryId);
+
+        if (!$category) {
+            throw new \Exception('Catégorie introuvable');
+        }
+
         $entityManager = $this->doctrine->getManager();
         $book = new Book();
         $book->setTitle($data['title']);
@@ -35,11 +44,11 @@ class BookService
         $book->setEdition($data['edition']);
         $book->setTranslator($data['translator']);
         $book->setDescription($data['description']);
+        $book->setCategory($category);
         $bookCover = $_ENV['API_URL'] . '/api/uploads/cover/' . $coverFileName;
         $book-> setCover($bookCover);
         $book->setDownloads(0);
         $book->setViews(0);
-        $book->setCategory($data['category']);
         $link = $_ENV['API_URL'] . '/api/uploads/pdf/' . $fileName;
         $book->setLink($link);
 
@@ -54,14 +63,19 @@ class BookService
     }
 
 
-    public function getAllFiles()
-    {
-        try {
-            $books = $this->bookRepository->findAll();
-            return $books;
-        } catch (\Exception $e) {
-            return ['message' => 'Erreur lors de la récupération des fichiers'];
-        }
+public function getAllFiles(?int $categoryId, int $limit, string $order)
+{
+    $qb = $this->bookRepository->createQueryBuilder('b')
+        ->orderBy('b.title', $order)
+        ->setMaxResults($limit);
+
+    if ($categoryId !== null) {
+        $qb->andWhere('b.category = :categoryId')
+           ->setParameter('categoryId', $categoryId);
     }
+
+    return $qb->getQuery()->getResult();
+}
+
 
 }
