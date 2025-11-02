@@ -32,4 +32,7 @@
 /public/uploads/*
 !/public/uploads/.gitkeep
 
-.env
+/migrations
+composer.lock
+
+/public 
